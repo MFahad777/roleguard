@@ -19,11 +19,15 @@ async function run() {
     await client.connect();
     const authRealm = new AuthRealm();
 
-    authRealm.use(new MongoDBStrategy(client, "testDb","roles","users"));
+    authRealm.use(new MongoDBStrategy(client, "sample_mflix","roles","users"));
 
     // await authRealm.removeRole("TestRole");
 
-    // await authRealm.addRole({name:"TestRole", permissions:["EDIT","VIEW"]})
+    // await authRealm.addRole({name:"TestRole", permissions:["EDIT","VIEW"]});
+
+    const d = await authRealm.assignRoleToUser("59b99db4cfa9a34dcd7885b6", "TestRole");
+
+    console.log(d);
 
   } finally {
     // Ensures that the client will close when you finish/error

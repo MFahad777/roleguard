@@ -1,6 +1,6 @@
 import { IStrategy } from "./interfaces/IStrategy"
 import { TRole } from "./types/TRole"
-import {InferIdType, ObjectId} from "mongodb";
+import {DeleteResult, InferIdType, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
 
 class AuthRealm {
     private strategy: IStrategy;
@@ -13,23 +13,23 @@ class AuthRealm {
     }
 
     // Proxy methods to RoleManager and PermissionManager
-    async addRole(role: TRole): Promise<void> {
+    async addRole(role: TRole): Promise<InsertOneResult<Document>> {
         return this.strategy.addRole(role);
     }
 
-    async removeRole(roleName: string): Promise<void> {
-        return this.strategy.removeRole(roleName);
+    async removeRole(roleNameOrId: InferIdType<ObjectId | string>) : Promise<DeleteResult> {
+        return this.strategy.removeRole(roleNameOrId);
     }
 
-    async assignPermission(roleName: string, permission: string): Promise<void> {
-        return this.strategy.assignPermission(roleName, permission);
+    async assignPermission(roleNameOrId: InferIdType<ObjectId | string>, permission: string): Promise<UpdateResult<Document>> {
+        return this.strategy.assignPermission(roleNameOrId, permission);
     }
 
-    async hasPermission(roleName: string, permission: string): Promise<boolean> {
-        return this.strategy.hasPermission(roleName, permission);
+    async hasPermission(roleNameOrId: InferIdType<ObjectId | string>, permission: string): Promise<boolean> {
+        return this.strategy.hasPermission(roleNameOrId, permission);
     }
 
-    async assignRoleToUser(userId: InferIdType<ObjectId | string>, roleName: string): Promise<void> {
+    async assignRoleToUser(userId: InferIdType<ObjectId | string>, roleName: string): Promise<UpdateResult<Document>> {
         return this.strategy.assignRoleToUser(userId, roleName);
     }
 
