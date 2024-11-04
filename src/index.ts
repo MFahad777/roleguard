@@ -3,7 +3,7 @@ import { IBaseStrategy } from "./interfaces/IStrategy"
 class RoleGuard {
     private strategy: IBaseStrategy;
 
-    use(strategy: IBaseStrategy): void {
+    constructor(strategy: IBaseStrategy) {
         if (!strategy) {
             throw new Error('No strategy has been set. Please use a strategy first.');
         }
