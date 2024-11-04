@@ -1,5 +1,5 @@
 import { IMongoDBStrategy } from "../../interfaces/IStrategy";
-import {TRole} from "../../types/TRole";
+import {Role} from "../../types/Role";
 import {MongoClient, Db, ObjectId, InsertOneResult, DeleteResult, UpdateResult, Filter, Document} from "mongodb";
 
 class MongoStrategy implements IMongoDBStrategy {
@@ -20,7 +20,7 @@ class MongoStrategy implements IMongoDBStrategy {
         this.userCollectionName = userCollectionName;
     }
 
-    async addRole(role: TRole): Promise<InsertOneResult> {
+    async addRole(role: Role): Promise<InsertOneResult> {
         return await this.db.collection(this.roleCollectionName).insertOne(role);
     }
 

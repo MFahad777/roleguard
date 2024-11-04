@@ -1,4 +1,4 @@
-import {TRole} from "../types/TRole";
+import {Role} from "../types/Role";
 import {InferIdType, ObjectId, InsertOneResult, DeleteResult, UpdateResult} from "mongodb";
 import { QueryWithHelpers } from "mongoose";
 
@@ -17,7 +17,7 @@ export interface IBaseStrategy {
 }
 
 export interface IMongoDBStrategy extends IBaseStrategy {
-    addRole(role: TRole): Promise<InsertOneResult<Document>>;
+    addRole(role: Role): Promise<InsertOneResult<Document>>;
 
     removeRole(roleNameOrId: string): Promise<DeleteResult>;
 
@@ -31,7 +31,7 @@ export interface IMongoDBStrategy extends IBaseStrategy {
 }
 
 export interface IMongooseStrategy extends IBaseStrategy {
-    addRole(role: TRole): Promise<Document>;
+    addRole(role: Role): Promise<Document>;
 
     removeRole(roleNameOrId: string): Promise<QueryWithHelpers<DeleteResult, Document>>;
 

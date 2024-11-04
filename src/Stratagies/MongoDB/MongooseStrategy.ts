@@ -1,6 +1,6 @@
 import {IMongooseStrategy} from "../../interfaces/IStrategy";
 import {IUser, IRole} from "../../interfaces/IModel";
-import {TRole} from "../../types/TRole";
+import {Role} from "../../types/Role";
 import {Model, QueryWithHelpers} from "mongoose";
 import {DeleteResult, ObjectId, UpdateResult} from "mongodb";
 
@@ -14,7 +14,7 @@ class MongooseStrategy implements IMongooseStrategy {
         this.userModel = userModel;
     }
 
-    async addRole(role: TRole): Promise<Document> {
+    async addRole(role: Role): Promise<Document> {
         const newRole = new this.roleModel(role);
         return await newRole.save();
     }
