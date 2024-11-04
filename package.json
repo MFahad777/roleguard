@@ -1,7 +1,7 @@
 {
-  "name": "authrealm",
+  "name": "roleguard",
   "version": "1.0.0",
-  "description": "Auth Realm is a flexible role and permission management package that seamlessly integrates with MongoDB and MySQL, empowering developers to implement fine-grained access control in their applications.",
+  "description": "Role Guard is a flexible role and permission management package that seamlessly integrates with MongoDB and MySQL, empowering developers to implement fine-grained access control in their applications.",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
@@ -17,7 +17,9 @@
   "author": "Muhammad Fahad",
   "license": "ISC",
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^22.8.4",
+    "mongoose": "^8.7.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"

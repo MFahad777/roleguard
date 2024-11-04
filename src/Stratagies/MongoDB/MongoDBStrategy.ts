@@ -1,8 +1,8 @@
-import {IStrategy} from "../../interfaces/IStrategy";
+import { IMongoDBStrategy } from "../../interfaces/IStrategy";
 import {TRole} from "../../types/TRole";
-import {MongoClient, Db, InferIdType, ObjectId, InsertOneResult, DeleteResult, UpdateResult} from "mongodb";
+import {MongoClient, Db, ObjectId, InsertOneResult, DeleteResult, UpdateResult, Filter, Document} from "mongodb";
 
-class MongoStrategy implements IStrategy {
+class MongoStrategy implements IMongoDBStrategy {
     private client: MongoClient;
     private db: Db;
     private roleCollectionName: string = "roles";
@@ -20,11 +20,11 @@ class MongoStrategy implements IStrategy {
         this.userCollectionName = userCollectionName;
     }
 
-    async addRole(role: TRole): Promise<InsertOneResult<Document>> {
+    async addRole(role: TRole): Promise<InsertOneResult> {
         return await this.db.collection(this.roleCollectionName).insertOne(role);
     }
 
-    async removeRole(roleNameOrId: InferIdType<ObjectId | string>): Promise<DeleteResult> {
+    async removeRole(roleNameOrId: string): Promise<DeleteResult> {
         return await this.db
             .collection(this.roleCollectionName)
             .deleteOne({
@@ -35,30 +35,34 @@ class MongoStrategy implements IStrategy {
             });
     }
 
-    async assignPermission(roleNameOrId: InferIdType<ObjectId | string>, permission: string): Promise<UpdateResult<Document>> {
+    async assignPermission(roleNameOrId: string, permission: string): Promise<UpdateResult> {
        return await this.db.collection(this.roleCollectionName).updateOne(
             {$or: [{name: roleNameOrId}, {_id: new ObjectId(roleNameOrId)}]},
             {$addToSet: {permissions: permission}}
         );
     }
 
-    async hasPermission(roleNameOrId: InferIdType<ObjectId | string>, permission: string): Promise<boolean> {
+    async hasPermission(roleNameOrId: string, permission: string): Promise<boolean> {
+
         const role = await this.db.
-        collection(this.roleCollectionName)
+            collection(this.roleCollectionName)
             .findOne({$or: [{name: roleNameOrId}, {_id: new ObjectId(roleNameOrId)}]});
+
         return role ? role.permissions.includes(permission) : false;
     }
 
-    async assignRoleToUser(userId: InferIdType<ObjectId | string>, roleName: string): Promise<UpdateResult<Document>> {
+    async assignRoleToUser(userId: string, roleName: string): Promise<UpdateResult> {
 
-        const getUser = await this.db.collection(this.userCollectionName).findOne({
+        const filter = {
             _id : new ObjectId(userId)
-        });
+        } as Filter<Document>
+
+        const getUser = await this.db.collection(this.userCollectionName).findOne(filter);
 
         const roles = getUser?.roles ?? [];
 
         return await this.db.collection(this.userCollectionName).updateOne(
-            {_id: new ObjectId(userId)},
+            filter,
             {
                 $set: {
                     roles: [...roles, roleName]
@@ -67,9 +71,13 @@ class MongoStrategy implements IStrategy {
         );
     }
 
-    async checkUserPermission(userId: InferIdType<ObjectId | string>, permission: string): Promise<boolean> {
+    async checkUserPermission(userId: string, permission: string): Promise<boolean> {
 
-        const user = await this.db.collection(this.userCollectionName).findOne({_id: new ObjectId(userId)});
+        const filter = {
+            _id : new ObjectId(userId)
+        } as Filter<Document>
+
+        const user = await this.db.collection(this.userCollectionName).findOne(filter);
 
         if (!user || !user.roles) {
             return false;
